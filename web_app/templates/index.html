@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sistema de Recomendacion Musical</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; background-color: #f4f4f4; color: #333; }
+        h1, h2, h3 { color: #333; }
+        select, button { padding: 8px 12px; margin: 5px; border-radius: 4px; border: 1px solid #ddd; background-color: #fff; cursor: pointer; }
+        button:hover { background-color: #e9e9e9; }
+        #resultados { margin-top: 15px; padding: 15px; background-color: #fff; border: 1px solid #ddd; border-radius: 4px; min-height: 50px; }
+        #resultados ul { list-style-type: none; padding-left: 0; }
+        #resultados li { padding: 5px 0; border-bottom: 1px dashed #eee; }
+        #resultados li:last-child { border-bottom: none; }
+        .user-selection, .actions-container { margin-bottom: 20px; padding: 15px; background-color: #fff; border: 1px solid #ddd; border-radius: 4px;}
+    </style>
+</head>
+<body>
+    <h1>Sistema de Recomendacion Musical</h1>
+
+    <div class="user-selection">
+        <h2>Usuario</h2>
+        {% if usuario_actual %}
+            <p>Usuario actual: <strong>{{ usuario_actual.nombre }}</strong> ({{ usuario_actual.edad }} años)</p>
+            <button onclick="cerrarSesion()">Cambiar Usuario</button>
+        {% else %}
+            <p>Selecciona un usuario:</p>
+            <select id="usuarioSelect">
+                <option value="">Seleccionar...</option>
+                {% for uri, nombre in usuarios %}
+                    <option value="{{ uri }}">{{ nombre }}</option>
+                {% endfor %}
+            </select>
+            <button onclick="seleccionarUsuario()">Seleccionar</button>
+        {% endif %}
+    </div>
+
+    {% if usuario_actual %}
+    <div class="actions-container">
+        <h2>Acciones</h2>
+        <button onclick="obtenerCancionParaCalificar()">Calificar Cancion</button>
+        <button onclick="obtenerRecomendaciones()">Ver Recomendaciones</button>
+        <button onclick="actualizarIntereses()">Actualizar Intereses</button>
+        <button onclick="obtenerEstadisticas()">Ver Estadisticas</button>
+        <button onclick="guardarCambios()">Guardar Cambios</button>
+        <button onclick="limpiarResultados()">Limpiar</button>
+    </div>
+
+    <h2>Resultados</h2>
+    <div id="resultados">
+        <p>Selecciona una accion</p>
+    </div>
+    {% endif %}
+
+    <script>
+        let cancionActual = null;
+        function seleccionarUsuario() {
+            const select = document.getElementById('usuarioSelect');
+            const usuarioUri = select.value;
+            if (!usuarioUri) {
+                alert('Selecciona un usuario');
+                return;
+            }
+            const formData = new FormData();
+            formData.append('usuario_uri', usuarioUri);
+            fetch('/seleccionar_usuario', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Error al seleccionar usuario: ' + data.message);
+                }
+            })
+            .catch(error => {
+                alert('Error de conexion al seleccionar usuario.');
+            });
+        }
+        function cerrarSesion() {
+            window.location.href = '/cerrar_sesion';
+        }
+        function obtenerCancionParaCalificar() {
+            document.getElementById('resultados').innerHTML = '<p>Cargando canción...</p>';
+            fetch('/obtener_cancion_para_calificar')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.cancion) {
+                    mostrarCancionParaCalificar(data.cancion);
+                } else {
+                    document.getElementById('resultados').innerHTML = `<p>${data.message || 'No hay más canciones para calificar o error.'}</p>`;
+                }
+            })
+            .catch(error => {
+                document.getElementById('resultados').innerHTML = '<p>Error de conexion al obtener canción.</p>';
+            });
+        }
+        function mostrarCancionParaCalificar(cancion) {
+            cancionActual = cancion;
+            const html = `
+                <h3>Califica esta cancion:</h3>
+                <p><strong>Titulo:</strong> ${cancion.titulo}</p>
+                <p><strong>Genero:</strong> ${cancion.genero}</p>
+                <button onclick="calificarCancion(true)">Me Gusta 👍</button>
+                <button onclick="calificarCancion(false)">No Me Gusta 👎</button>
+                <button onclick="saltarCancion()">Saltar ⏭️</button>
+            `;
+            document.getElementById('resultados').innerHTML = html;
+        }
+        function calificarCancion(leGusta) {
+            if (!cancionActual) {
+                alert('No hay cancion para calificar');
+                return;
+            }
+            document.getElementById('resultados').innerHTML = '<p>Registrando calificación...</p>';
+            const payload = {
+                cancion_uri: cancionActual.uri,
+                le_gusta: leGusta
+            };
+            fetch('/calificar_cancion', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('resultados').innerHTML = `<p>${data.message}</p>`;
+                if (data.success) {
+                    cancionActual = null;
+                }
+            })
+            .catch(error => {
+                document.getElementById('resultados').innerHTML = '<p>Error de conexion al calificar.</p>';
+            });
+        }
+        function saltarCancion() {
+            cancionActual = null;
+            obtenerCancionParaCalificar();
+        }
+        function obtenerRecomendaciones() {
+            document.getElementById('resultados').innerHTML = '<p>Obteniendo recomendaciones...</p>';
+            fetch('/obtener_recomendaciones')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    mostrarRecomendaciones(data.recomendaciones);
+                } else {
+                    document.getElementById('resultados').innerHTML = `<p>${data.message || 'Error al obtener recomendaciones.'}</p>`;
+                }
+            })
+            .catch(error => {
+                document.getElementById('resultados').innerHTML = '<p>Error de conexion al obtener recomendaciones.</p>';
+            });
+        }
+        function mostrarRecomendaciones(recomendaciones) {
+            let html = '<h3>Recomendaciones para ti:</h3>';
+            if (!recomendaciones || recomendaciones.length === 0) {
+                html += '<p>No hay recomendaciones disponibles en este momento.</p>';
+            } else {
+                html += '<ul>';
+                recomendaciones.forEach((cancion, index) => {
+                    html += `<li>${index + 1}. <strong>${cancion.titulo}</strong> (${cancion.genero})</li>`;
+                });
+                html += '</ul>';
+            }
+            document.getElementById('resultados').innerHTML = html;
+        }
+        function actualizarIntereses() {
+            document.getElementById('resultados').innerHTML = '<p>Actualizando intereses...</p>';
+            fetch('/actualizar_intereses', {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('resultados').innerHTML = `<p>${data.message || 'Error al actualizar intereses.'}</p>`;
+            })
+            .catch(error => {
+                document.getElementById('resultados').innerHTML = '<p>Error de conexion al actualizar intereses.</p>';
+            });
+        }
+        function obtenerEstadisticas() {
+            document.getElementById('resultados').innerHTML = '<p>Cargando estadísticas...</p>';
+            fetch('/obtener_estadisticas')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    mostrarEstadisticas(data);
+                } else {
+                    document.getElementById('resultados').innerHTML = `<p>${data.message || 'Error al obtener estadísticas.'}</p>`;
+                }
+            })
+            .catch(error => {
+                document.getElementById('resultados').innerHTML = '<p>Error de conexion al obtener estadísticas.</p>';
+            });
+        }
+        function mostrarEstadisticas(data) {
+            let html = '<h3>Tus Estadisticas:</h3>';
+            if (data.estadisticas) {
+                html += '<h4>Resumen:</h4><ul>';
+                html += `<li>Canciones calificadas: ${data.estadisticas.total_calificaciones || 0}</li>`;
+                html += `<li>Promedio de calificaciones: ${(data.estadisticas.promedio_calificaciones || 0).toFixed(1)}/5</li>`;
+                html += `<li>Géneros explorados: ${data.estadisticas.generos_calificados || 0}</li>`;
+                html += '</ul>';
+            }
+            if (data.intereses && data.intereses.length > 0) {
+                html += '<h4>Intereses Actuales:</h4><ul>';
+                data.intereses.forEach(interes => {
+                    html += `<li>${interes}</li>`;
+                });
+                html += '</ul>';
+            } else {
+                html += '<h4>Intereses Actuales:</h4><p>Aún no tienes intereses definidos. ¡Califica algunas canciones!</p>';
+            }
+            if (data.calificaciones_recientes && data.calificaciones_recientes.length > 0) {
+                html += '<h4>Calificaciones Recientes:</h4><ul>';
+                data.calificaciones_recientes.forEach(cal => {
+                    const gustoTexto = cal.valor >= 4 ? 'Me gusta 👍' : 'No me gusta 👎';
+                    html += `<li><strong>${cal.titulo}</strong> (${cal.genero}) - Calificación: ${gustoTexto} (Fecha: ${new Date(cal.fecha).toLocaleDateString()})</li>`;
+                });
+                html += '</ul>';
+            } else {
+                html += '<h4>Calificaciones Recientes:</h4><p>No has calificado canciones recientemente.</p>';
+            }
+            document.getElementById('resultados').innerHTML = html;
+        }
+        function guardarCambios() {
+            document.getElementById('resultados').innerHTML = '<p>Guardando cambios en el servidor...</p>';
+            fetch('/guardar_cambios', {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('resultados').innerHTML = `<p>${data.message || 'Error al guardar cambios.'}</p>`;
+            })
+            .catch(error => {
+                document.getElementById('resultados').innerHTML = '<p>Error de conexion al guardar cambios.</p>';
+            });
+        }
+        function limpiarResultados() {
+            document.getElementById('resultados').innerHTML = '<p>Selecciona una accion</p>';
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Sistema de recomendación musical cargado.');
+        });
+    </script>
+</body>
+</html>

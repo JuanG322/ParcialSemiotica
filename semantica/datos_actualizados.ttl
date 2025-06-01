@@ -1,0 +1,189 @@
+@prefix ex: <http://example.org/ontologia#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://example.org/ontologia> a owl:Ontology .
+
+ex:InteresRap a ex:Interes ;
+    ex:nombreInteres "Rap"^^xsd:string .
+
+ex:añoLanzamiento a owl:DatatypeProperty ;
+    rdfs:domain ex:Contenido ;
+    rdfs:range xsd:integer .
+
+ex:basadaEnInteres a owl:ObjectProperty ;
+    rdfs:domain ex:Recomendacion ;
+    rdfs:range ex:Interes .
+
+ex:cancion1 a ex:Contenido ;
+    ex:perteneceAGenero ex:GeneroPop ;
+    ex:titulo "Estrella Pop"^^xsd:string .
+
+ex:cancion10 a ex:Contenido ;
+    ex:perteneceAGenero ex:GeneroReggaeton ;
+    ex:titulo "Baila Conmigo"^^xsd:string .
+
+ex:cancion2 a ex:Contenido ;
+    ex:perteneceAGenero ex:GeneroRock ;
+    ex:titulo "Rock Eterno"^^xsd:string .
+
+ex:cancion3 a ex:Contenido ;
+    ex:perteneceAGenero ex:GeneroElectronica ;
+    ex:titulo "Ritmo Digital"^^xsd:string .
+
+ex:cancion4 a ex:Contenido ;
+    ex:perteneceAGenero ex:GeneroRap ;
+    ex:titulo "Versos Callejeros"^^xsd:string .
+
+ex:cancion5 a ex:Contenido ;
+    ex:perteneceAGenero ex:GeneroReggaeton ;
+    ex:titulo "Noche de Perreo"^^xsd:string .
+
+ex:cancion6 a ex:Contenido ;
+    ex:perteneceAGenero ex:GeneroPop ;
+    ex:titulo "Sueños Pop"^^xsd:string .
+
+ex:cancion7 a ex:Contenido ;
+    ex:perteneceAGenero ex:GeneroRock ;
+    ex:titulo "Guitarra Rebelde"^^xsd:string .
+
+ex:cancion8 a ex:Contenido ;
+    ex:perteneceAGenero ex:GeneroElectronica ;
+    ex:titulo "Frecuencia Modulada"^^xsd:string .
+
+ex:cancion9 a ex:Contenido ;
+    ex:perteneceAGenero ex:GeneroRap ;
+    ex:titulo "Rimas y Verdades"^^xsd:string .
+
+ex:confianza a owl:DatatypeProperty ;
+    rdfs:domain ex:Recomendacion ;
+    rdfs:range xsd:float .
+
+ex:descripcion a owl:DatatypeProperty ;
+    rdfs:domain ex:Contenido ;
+    rdfs:range xsd:string .
+
+ex:edad a owl:DatatypeProperty ;
+    rdfs:domain ex:Usuario ;
+    rdfs:range xsd:integer .
+
+ex:fechaCalificacion a owl:DatatypeProperty ;
+    rdfs:domain ex:Calificacion ;
+    rdfs:range xsd:dateTime .
+
+ex:fechaRecomendacion a owl:DatatypeProperty ;
+    rdfs:domain ex:Recomendacion ;
+    rdfs:range xsd:dateTime .
+
+ex:nombreGenero a owl:DatatypeProperty ;
+    rdfs:domain ex:Genero ;
+    rdfs:range xsd:string .
+
+ex:nombreInteres a owl:DatatypeProperty ;
+    rdfs:domain ex:Interes ;
+    rdfs:range xsd:string .
+
+ex:nombreUsuario a owl:DatatypeProperty ;
+    rdfs:domain ex:Usuario ;
+    rdfs:range xsd:string .
+
+ex:paraUsuario a owl:ObjectProperty ;
+    rdfs:domain ex:Recomendacion ;
+    rdfs:range ex:Usuario .
+
+ex:perteneceAGenero a owl:ObjectProperty ;
+    rdfs:domain ex:Contenido ;
+    rdfs:range ex:Genero .
+
+ex:realizaCalificacion a owl:ObjectProperty ;
+    rdfs:domain ex:Usuario ;
+    rdfs:range ex:Calificacion .
+
+ex:recomienda a owl:ObjectProperty ;
+    rdfs:domain ex:Recomendacion ;
+    rdfs:range ex:Contenido .
+
+ex:sobreContenido a owl:ObjectProperty ;
+    rdfs:domain ex:Calificacion ;
+    rdfs:range ex:Contenido .
+
+ex:tieneInteres a owl:ObjectProperty ;
+    rdfs:domain ex:Usuario ;
+    rdfs:range ex:Interes .
+
+ex:titulo a owl:DatatypeProperty ;
+    rdfs:domain ex:Contenido ;
+    rdfs:range xsd:string .
+
+ex:usuario1 a ex:Usuario ;
+    ex:edad 28 ;
+    ex:nombreUsuario "Ana Pérez"^^xsd:string ;
+    ex:tieneInteres ex:InteresElectronica,
+        ex:InteresPop .
+
+ex:usuario2 a ex:Usuario ;
+    ex:edad 34 ;
+    ex:nombreUsuario "Luis Gómez"^^xsd:string ;
+    ex:tieneInteres ex:InteresRock .
+
+ex:usuario3 a ex:Usuario ;
+    ex:edad 22 ;
+    ex:nombreUsuario "Carlos Diaz"^^xsd:string .
+
+ex:usuario4 a ex:Usuario ;
+    ex:edad 25 ;
+    ex:nombreUsuario "Sofia Castro"^^xsd:string ;
+    ex:tieneInteres ex:InteresElectronica,
+        ex:InteresPop,
+        ex:InteresRock .
+
+ex:usuario5 a ex:Usuario ;
+    ex:edad 30 ;
+    ex:nombreUsuario "Juan Giraldo"^^xsd:string ;
+    ex:tieneInteres ex:InteresElectronica,
+        ex:InteresReggaeton .
+
+ex:valorCalificacion a owl:DatatypeProperty ;
+    rdfs:domain ex:Calificacion ;
+    rdfs:range xsd:integer .
+
+ex:InteresReggaeton a ex:Interes ;
+    ex:nombreInteres "Reggaetón"^^xsd:string .
+
+ex:GeneroElectronica a ex:Genero ;
+    ex:nombreGenero "Electrónica"^^xsd:string .
+
+ex:GeneroPop a ex:Genero ;
+    ex:nombreGenero "Pop"^^xsd:string .
+
+ex:GeneroRap a ex:Genero ;
+    ex:nombreGenero "Rap"^^xsd:string .
+
+ex:GeneroReggaeton a ex:Genero ;
+    ex:nombreGenero "Reggaetón"^^xsd:string .
+
+ex:GeneroRock a ex:Genero ;
+    ex:nombreGenero "Rock"^^xsd:string .
+
+ex:InteresPop a ex:Interes ;
+    ex:nombreInteres "Pop"^^xsd:string .
+
+ex:InteresRock a ex:Interes ;
+    ex:nombreInteres "Rock"^^xsd:string .
+
+ex:InteresElectronica a ex:Interes ;
+    ex:nombreInteres "Electrónica"^^xsd:string .
+
+ex:Calificacion a owl:Class .
+
+ex:Recomendacion a owl:Class .
+
+ex:Genero a owl:Class .
+
+ex:Interes a owl:Class .
+
+ex:Usuario a owl:Class .
+
+ex:Contenido a owl:Class .
+

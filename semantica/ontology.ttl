@@ -1,0 +1,95 @@
+
+@prefix : <http://example.org/ontologia#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<http://example.org/ontologia> rdf:type owl:Ontology .
+
+### Clases Principales
+:Usuario rdf:type owl:Class .
+:Contenido rdf:type owl:Class .
+:Recomendacion rdf:type owl:Class .
+:Genero rdf:type owl:Class .
+:Interes rdf:type owl:Class .
+:Calificacion rdf:type owl:Class .
+
+### Data Properties para Usuario
+:nombreUsuario rdf:type owl:DatatypeProperty ;
+               rdfs:domain :Usuario ;
+               rdfs:range xsd:string .
+
+:edad rdf:type owl:DatatypeProperty ;
+      rdfs:domain :Usuario ;
+      rdfs:range xsd:integer .
+
+### Data Properties para Contenido
+:titulo rdf:type owl:DatatypeProperty ;
+        rdfs:domain :Contenido ;
+        rdfs:range xsd:string .
+
+:descripcion rdf:type owl:DatatypeProperty ;
+             rdfs:domain :Contenido ;
+             rdfs:range xsd:string .
+
+:añoLanzamiento rdf:type owl:DatatypeProperty ;
+                rdfs:domain :Contenido ;
+                rdfs:range xsd:integer .
+
+### Data Properties para Recomendacion
+:fechaRecomendacion rdf:type owl:DatatypeProperty ;
+                    rdfs:domain :Recomendacion ;
+                    rdfs:range xsd:dateTime .
+
+:confianza rdf:type owl:DatatypeProperty ;
+           rdfs:domain :Recomendacion ;
+           rdfs:range xsd:float .
+
+### Data Property para Genero
+:nombreGenero rdf:type owl:DatatypeProperty ;
+              rdfs:domain :Genero ;
+              rdfs:range xsd:string .
+
+### Data Property para Interes
+:nombreInteres rdf:type owl:DatatypeProperty ;
+               rdfs:domain :Interes ;
+               rdfs:range xsd:string .
+
+### Data Properties para Calificacion
+:valorCalificacion rdf:type owl:DatatypeProperty ;
+                   rdfs:domain :Calificacion ;
+                   rdfs:range xsd:integer .
+
+:fechaCalificacion rdf:type owl:DatatypeProperty ;
+                   rdfs:domain :Calificacion ;
+                   rdfs:range xsd:dateTime .
+
+### Object Properties
+:tieneInteres rdf:type owl:ObjectProperty ;
+              rdfs:domain :Usuario ;
+              rdfs:range :Interes .
+
+:perteneceAGenero rdf:type owl:ObjectProperty ;
+                  rdfs:domain :Contenido ;
+                  rdfs:range :Genero .
+
+:realizaCalificacion rdf:type owl:ObjectProperty ;
+                     rdfs:domain :Usuario ;
+                     rdfs:range :Calificacion .
+
+:sobreContenido rdf:type owl:ObjectProperty ;
+                rdfs:domain :Calificacion ;
+                rdfs:range :Contenido .
+
+:recomienda rdf:type owl:ObjectProperty ;
+            rdfs:domain :Recomendacion ;
+            rdfs:range :Contenido .
+
+:paraUsuario rdf:type owl:ObjectProperty ;
+             rdfs:domain :Recomendacion ;
+             rdfs:range :Usuario .
+
+:basadaEnInteres rdf:type owl:ObjectProperty ;
+                 rdfs:domain :Recomendacion ;
+                 rdfs:range :Interes .
